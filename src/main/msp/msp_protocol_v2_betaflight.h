@@ -42,4 +42,5 @@
 #define MSP2TEXT_RELEASENAME                     6
 #define MSP2TEXT_CUSTOM_MSG_0                    7  // CUSTOM_MSG_MAX_NUM  entries are allocated
 #define CUSTOM_MSG_MAX_NUM                       4
+#define MSP2TEXT_SEC1_TAG                        11
 // next new variable type must be >= MSP2TEXT_CUSTOM_MSG_0 + CUSTOM_MSG_MAX_NUM (11)

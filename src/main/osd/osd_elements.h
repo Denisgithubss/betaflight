@@ -69,6 +69,7 @@ void osdSyncBlink(timeUs_t currentTimeUs);
 void osdResetAlarms(void);
 void osdUpdateAlarms(void);
 bool osdElementsNeedAccelerometer(void);
+void osdSetSec1TagText(const char *text);
 #ifdef USE_SPEC_PREARM_SCREEN
 bool osdDrawSpec(displayPort_t *osdDisplayPort);
 #endif // USE_SPEC_PREARM_SCREEN

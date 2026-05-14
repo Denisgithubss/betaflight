@@ -4090,6 +4090,21 @@ static mspResult_e mspProcessInCommand(mspDescriptor_t srcDesc, int16_t cmdMSP, 
                     }
                     break;
                 }
+#ifdef USE_OSD
+                case MSP2TEXT_SEC1_TAG:
+                {
+                    const unsigned length = sbufReadU8(src);
+                    char buf[32];
+                    const unsigned readLen = MIN(sizeof(buf) - 1, length);
+                    sbufReadData(src, buf, readLen);
+                    buf[readLen] = '\0';
+                    if (length > readLen) {
+                        sbufAdvance(src, length - readLen);
+                    }
+                    osdSetSec1TagText(buf);
+                    return MSP_RESULT_ACK;
+                }
+#endif
                 default:
                     return MSP_RESULT_ERROR;
             }

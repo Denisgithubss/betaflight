@@ -195,6 +195,7 @@ typedef enum {
     OSD_CUSTOM_MSG2,
     OSD_CUSTOM_MSG3,
     OSD_LIDAR_DIST,
+    OSD_SEC1_TAG,
     OSD_ITEM_COUNT // MUST BE LAST
 } osd_items_e;
 
@@ -423,3 +424,5 @@ void osdSetVisualBeeperState(bool state);
 statistic_t *osdGetStats(void);
 bool osdNeedsAccelerometer(void);
 int osdPrintFloat(char *buffer, char leadingSymbol, float value, char *formatString, unsigned decimalPlaces, bool round, char trailingSymbol);
+
+void osdSetSec1TagText(const char *text);

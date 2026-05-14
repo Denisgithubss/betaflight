@@ -1713,7 +1713,8 @@ const clivalue_t valueTable[] = {
 #endif //USE_CRAFTNAME_MSGS
 #ifdef USE_RANGEFINDER
     { "osd_lidar_dist_pos",         VAR_UINT16  | MASTER_VALUE, .config.minmaxUnsigned = { 0, OSD_POSCFG_MAX }, PG_OSD_ELEMENT_CONFIG, offsetof(osdElementConfig_t, item_pos[OSD_LIDAR_DIST]) },
-#endif //USE_RANGEFINDER
+#endif
+    { "osd_sec1_tag_pos",           VAR_UINT16  | MASTER_VALUE, .config.minmaxUnsigned = { 0, OSD_POSCFG_MAX }, PG_OSD_ELEMENT_CONFIG, offsetof(osdElementConfig_t, item_pos[OSD_SEC1_TAG]) },
 #endif // end of #ifdef USE_OSD
 
 // PG_SYSTEM_CONFIG

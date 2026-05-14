@@ -249,6 +249,29 @@ static bool displayPendingForeground;
 static bool displayPendingBackground;
 static char elementBuff[OSD_ELEMENT_BUFFER_LENGTH];
 
+static char sec1TagText[31];
+
+void osdSetSec1TagText(const char *text)
+{
+    if (text) {
+        unsigned i = 0;
+        for (; i < sizeof(sec1TagText) - 1 && text[i] != '\0'; i++) {
+            char c = text[i];
+            if (c >= 'a' && c <= 'z') {
+                c -= 'a' - 'A';
+            }
+            // Only allow printable ASCII, replace others with space
+            if (c < 32 || c > 126) {
+                c = ' ';
+            }
+            sec1TagText[i] = c;
+        }
+        sec1TagText[i] = '\0';
+    } else {
+        sec1TagText[0] = '\0';
+    }
+}
+
 // Return whether element is a SYS element and needs special handling
 #define IS_SYS_OSD_ELEMENT(item) (item >= OSD_SYS_GOGGLE_VOLTAGE) && (item <= OSD_SYS_FAN_SPEED)
 
@@ -850,6 +873,16 @@ static void osdElementCustomMsg(osdElementParms_t *element)
         strncpy(element->buff, pilotConfig()->message[msgIndex], MAX_NAME_LENGTH);
         element->buff[MAX_NAME_LENGTH] = 0;   // terminate maximum-length string
     }
+}
+
+static void osdElementSec1Tag(osdElementParms_t *element)
+{
+    if (sec1TagText[0] == '\0') {
+        element->drawElement = false;
+        return;
+    }
+    strncpy(element->buff, sec1TagText, OSD_ELEMENT_BUFFER_LENGTH - 1);
+    element->buff[OSD_ELEMENT_BUFFER_LENGTH - 1] = '\0';
 }
 
 #ifdef USE_ADC_INTERNAL
@@ -1941,6 +1974,7 @@ static const uint8_t osdElementDisplayOrder[] = {
 #ifdef USE_RANGEFINDER
     OSD_LIDAR_DIST,
 #endif
+    OSD_SEC1_TAG,
 };
 
 // Define the mapping between the OSD element id and the function to draw it
@@ -2088,6 +2122,7 @@ const osdElementDrawFn osdElementDrawFunction[OSD_ITEM_COUNT] = {
 #ifdef USE_RANGEFINDER
     [OSD_LIDAR_DIST]              = osdElementLidarDist,
 #endif
+    [OSD_SEC1_TAG]                = osdElementSec1Tag,
 };
 
 // Define the mapping between the OSD element id and the function to draw its background (static part)
