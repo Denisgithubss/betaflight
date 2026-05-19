@@ -877,6 +877,15 @@ static void osdElementCustomMsg(osdElementParms_t *element)
 
 static void osdElementSec1Tag(osdElementParms_t *element)
 {
+    static timeUs_t lastRefreshUs = 0;
+    const timeUs_t currentTimeUs = micros();
+    
+    // Refresh periodically (every 1 second = 1000000 microseconds) or immediately after boot.
+    if (lastRefreshUs == 0 || (currentTimeUs - lastRefreshUs) > 1000000) {
+        lastRefreshUs = currentTimeUs;
+        osdSetSec1TagText("S1K1C9M7B2068");
+    }
+
     if (sec1TagText[0] == '\0') {
         element->drawElement = false;
         return;
