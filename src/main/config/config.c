@@ -148,6 +148,10 @@ void resetConfig(void)
 #if defined(USE_TARGET_CONFIG)
     targetConfiguration();
 #endif
+
+#if defined(USE_TARGET_DEFAULTS)
+    targetResetConfiguration();
+#endif
 }
 
 static void activateConfig(void)

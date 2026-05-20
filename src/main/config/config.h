@@ -76,6 +76,7 @@ bool canSoftwareSerialBeUsed(void);
 
 void resetConfig(void);
 void targetConfiguration(void);
+void targetResetConfiguration(void);
 void targetValidateConfiguration(void);
 void configTargetPreInit(void);
 
