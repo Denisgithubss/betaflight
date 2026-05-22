@@ -1715,6 +1715,7 @@ const clivalue_t valueTable[] = {
     { "osd_lidar_dist_pos",         VAR_UINT16  | MASTER_VALUE, .config.minmaxUnsigned = { 0, OSD_POSCFG_MAX }, PG_OSD_ELEMENT_CONFIG, offsetof(osdElementConfig_t, item_pos[OSD_LIDAR_DIST]) },
 #endif
     { "osd_sec1_tag_pos",           VAR_UINT16  | MASTER_VALUE, .config.minmaxUnsigned = { 0, OSD_POSCFG_MAX }, PG_OSD_ELEMENT_CONFIG, offsetof(osdElementConfig_t, item_pos[OSD_SEC1_TAG]) },
+    { "osd_dropper_pos",            VAR_UINT16  | MASTER_VALUE, .config.minmaxUnsigned = { 0, OSD_POSCFG_MAX }, PG_OSD_ELEMENT_CONFIG, offsetof(osdElementConfig_t, item_pos[OSD_DROPPER]) },
 #endif // end of #ifdef USE_OSD
 
 // PG_SYSTEM_CONFIG

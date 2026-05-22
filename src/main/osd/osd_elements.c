@@ -883,7 +883,17 @@ static void osdElementSec1Tag(osdElementParms_t *element)
     // Refresh periodically (every 1 second = 1000000 microseconds) or immediately after boot.
     if (lastRefreshUs == 0 || (currentTimeUs - lastRefreshUs) > 1000000) {
         lastRefreshUs = currentTimeUs;
-        osdSetSec1TagText("S1K1C9M7B2068");
+
+        const char *pattern = "101011010110";
+        int i = 0;
+        for (; pattern[i] != '\0' && i < (int)sizeof(sec1TagText) - 1; i++) {
+            if (pattern[i] == '1') {
+                sec1TagText[i] = SYM_PB_FULL;
+            } else {
+                sec1TagText[i] = SYM_BLANK;
+            }
+        }
+        sec1TagText[i] = '\0';
     }
 
     if (sec1TagText[0] == '\0') {
@@ -892,6 +902,26 @@ static void osdElementSec1Tag(osdElementParms_t *element)
     }
     strncpy(element->buff, sec1TagText, OSD_ELEMENT_BUFFER_LENGTH - 1);
     element->buff[OSD_ELEMENT_BUFFER_LENGTH - 1] = '\0';
+}
+
+extern volatile uint8_t g_DropState;
+static uint8_t lastDropState = UINT8_MAX;
+static const char * const dropStateNames[] = {
+    "DS:NON",
+    "DS:TST",
+    "DS:RDY",
+    "DS:ARM",
+    "DS:TIM",
+    "DS:ERR",
+};
+
+static void osdElementDropper(osdElementParms_t *element)
+{
+    const uint8_t dropState = MIN(g_DropState, ARRAYLEN(dropStateNames) - 1);
+
+    strcpy(element->buff, dropStateNames[dropState]);
+    element->rendered |= lastDropState != dropState;
+    lastDropState = dropState;
 }
 
 #ifdef USE_ADC_INTERNAL
@@ -1984,6 +2014,7 @@ static const uint8_t osdElementDisplayOrder[] = {
     OSD_LIDAR_DIST,
 #endif
     OSD_SEC1_TAG,
+    OSD_DROPPER,
 };
 
 // Define the mapping between the OSD element id and the function to draw it
@@ -2132,6 +2163,7 @@ const osdElementDrawFn osdElementDrawFunction[OSD_ITEM_COUNT] = {
     [OSD_LIDAR_DIST]              = osdElementLidarDist,
 #endif
     [OSD_SEC1_TAG]                = osdElementSec1Tag,
+    [OSD_DROPPER]                 = osdElementDropper,
 };
 
 // Define the mapping between the OSD element id and the function to draw its background (static part)

@@ -55,8 +55,12 @@
 
 #include "drivers/display.h"
 #include "drivers/dshot.h"
+#include "drivers/exti.h"
 #include "drivers/flash/flash.h"
+#include "drivers/io.h"
+#include "drivers/nvic.h"
 #include "drivers/osd_symbols.h"
+#include "drivers/resource.h"
 #include "drivers/sdcard.h"
 #include "drivers/time.h"
 
@@ -159,9 +163,63 @@ escSensorData_t *osdEscDataCombined;
 
 STATIC_ASSERT(OSD_POS_MAX == OSD_POS(63,31), OSD_POS_MAX_incorrect);
 
+volatile uint8_t g_DropState = 0;
+static const char * const dropStateStatNames[] = {
+    "DS:NON",
+    "DS:TST",
+    "DS:RDY",
+    "DS:ARM",
+    "DS:TIM",
+    "DS:ERR",
+};
+
+#ifdef DROP_EXTI_PIN
+static timeUs_t dropLastTimeUs;
+static extiCallbackRec_t dropperCallbackRec;
+
+static void dropperEventHandler(extiCallbackRec_t *cb)
+{
+    if (!cb) {
+        return;
+    }
+
+    const timeUs_t currentTimeUs = micros();
+    const timeDelta_t pulseTimeUs = cmpTimeUs(currentTimeUs, dropLastTimeUs);
+
+    if (pulseTimeUs < 2250) {
+        g_DropState = 5;
+    }
+    if (pulseTimeUs < 1450) {
+        g_DropState = 4;
+    }
+    if (pulseTimeUs < 1330) {
+        g_DropState = 3;
+    }
+    if (pulseTimeUs < 950) {
+        g_DropState = 2;
+    }
+    if (pulseTimeUs < 850) {
+        g_DropState = 1;
+    }
+
+    dropLastTimeUs = currentTimeUs;
+}
+#endif
+
+static void dropperInit(void)
+{
+#ifdef DROP_EXTI_PIN
+    IO_t dropperIO = IOGetByTag(IO_TAG(DROP_EXTI_PIN));
+    IOInit(dropperIO, OWNER_DROP_EXTI, 0);
+    EXTIHandlerInit(&dropperCallbackRec, dropperEventHandler);
+    EXTIConfig(dropperIO, &dropperCallbackRec, NVIC_PRIO_MPU_INT_EXTI, IOCFG_IN_FLOATING, BETAFLIGHT_EXTI_TRIGGER_BOTH);
+    EXTIEnable(dropperIO);
+#endif
+}
+
 PG_REGISTER_WITH_RESET_FN(osdConfig_t, osdConfig, PG_OSD_CONFIG, 12);
 
-PG_REGISTER_WITH_RESET_FN(osdElementConfig_t, osdElementConfig, PG_OSD_ELEMENT_CONFIG, 2);
+PG_REGISTER_WITH_RESET_FN(osdElementConfig_t, osdElementConfig, PG_OSD_ELEMENT_CONFIG, 3);
 
 // Controls the display order of the OSD post-flight statistics.
 // Adjust the ordering here to control how the post-flight stats are presented.
@@ -205,6 +263,7 @@ const osd_stats_e osdStatsDisplayOrder[OSD_STAT_COUNT] = {
     OSD_STAT_FULL_THROTTLE_TIME,
     OSD_STAT_FULL_THROTTLE_COUNTER,
     OSD_STAT_AVG_THROTTLE,
+    OSD_STAT_DROP_STATE,
 };
 
 #define OSD_TASK_MARGIN                 1
@@ -366,6 +425,7 @@ void pgResetFn_osdConfig(osdConfig_t *osdConfig)
     osdStatSetState(OSD_STAT_FULL_THROTTLE_COUNTER, true);
     osdStatSetState(OSD_STAT_AVG_THROTTLE, true);
 #endif
+    osdStatSetState(OSD_STAT_DROP_STATE, true);
 
     osdConfig->timers[OSD_TIMER_1] = osdTimerDefault[OSD_TIMER_1];
     osdConfig->timers[OSD_TIMER_2] = osdTimerDefault[OSD_TIMER_2];
@@ -467,6 +527,7 @@ void pgResetFn_osdElementConfig(osdElementConfig_t *osdElementConfig)
 
     // SEC1_TAG default position (top-left, visible)
     osdElementConfig->item_pos[OSD_SEC1_TAG]           = 2048;
+    osdElementConfig->item_pos[OSD_DROPPER]            = OSD_POS(2, 1);
 }
 
 static void osdDrawLogo(int x, int y, displayPortSeverity_e fontSel)
@@ -541,6 +602,8 @@ void osdInit(displayPort_t *osdDisplayPortToUse, osdDisplayPortDevice_e displayP
     if (!osdDisplayPortToUse) {
         return;
     }
+
+    dropperInit();
 
     osdDisplayPort = osdDisplayPortToUse;
 #ifdef USE_CMS
@@ -1060,6 +1123,13 @@ static bool osdDisplayStat(int statistic, uint8_t displayRow)
         return true;
     }
 #endif // USE_RC_STATS
+
+    case OSD_STAT_DROP_STATE: {
+        const uint8_t dropState = MIN(g_DropState, ARRAYLEN(dropStateStatNames) - 1);
+        strcpy(buff, dropStateStatNames[dropState]);
+        osdDisplayStatisticLabel(midCol, displayRow, "DROP STATE", buff);
+        return true;
+    }
     }
     return false;
 }

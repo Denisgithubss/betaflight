@@ -196,6 +196,7 @@ typedef enum {
     OSD_CUSTOM_MSG3,
     OSD_LIDAR_DIST,
     OSD_SEC1_TAG,
+    OSD_DROPPER,
     OSD_ITEM_COUNT // MUST BE LAST
 } osd_items_e;
 
@@ -242,6 +243,7 @@ typedef enum {
     OSD_STAT_FULL_THROTTLE_TIME,
     OSD_STAT_FULL_THROTTLE_COUNTER,
     OSD_STAT_AVG_THROTTLE,
+    OSD_STAT_DROP_STATE,
     OSD_STAT_COUNT // MUST BE LAST
 } osd_stats_e;
 
