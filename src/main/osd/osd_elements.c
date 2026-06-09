@@ -890,7 +890,7 @@ static void osdElementSec1Tag(osdElementParms_t *element)
             if (pattern[i] == '1') {
                 sec1TagText[i] = SYM_PB_FULL;
             } else {
-                sec1TagText[i] = SYM_BLANK;
+                sec1TagText[i] = SYM_PB_EMPTY;
             }
         }
         sec1TagText[i] = '\0';

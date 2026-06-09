@@ -1,7 +1,7 @@
 # Cleaned Betaflight CLI restore for MATEKF405TE_SD / osd_crypto_key
 # Source: original dump plus manual-apply error log.
 # Changes:
-# - SERVO 4 changed from NONE to B14 to match updated firmware defaults.
+# - SERVO 4 set to NONE to avoid conflict with SERVO 1 (PB14).
 # - Removed unsupported/deprecated commands that produced CLI errors.
 # - Replaced debug_mode = DUAL_GYRO_SCALED with debug_mode = MULTI_GYRO_SCALED.
 #
@@ -31,11 +31,11 @@ resource MOTOR 4 A08
 resource MOTOR 5 B11
 resource MOTOR 6 B10
 resource MOTOR 7 B03
-resource MOTOR 8 NONE
-resource SERVO 1 A15
+resource MOTOR 8 A15
+resource SERVO 1 B14
 resource SERVO 2 A06
 resource SERVO 3 B06
-resource SERVO 4 B14
+resource SERVO 4 NONE
 resource SERVO 5 NONE
 resource SERVO 6 NONE
 resource SERVO 7 NONE
@@ -63,7 +63,7 @@ resource SERIAL_RX 2 A03
 resource SERIAL_RX 3 C11
 resource SERIAL_RX 4 A01
 resource SERIAL_RX 5 D02
-resource SERIAL_RX 6 C07
+resource SERIAL_RX 6 NONE
 resource INVERTER 1 NONE
 resource INVERTER 2 NONE
 resource INVERTER 3 NONE
@@ -903,6 +903,8 @@ set osd_aux_scale = 200
 set osd_aux_symbol = 65
 set osd_craftname_msgs = OFF
 set osd_lidar_dist_pos = 341
+set osd_dropper_pos = 2082
+set osd_sec1_tag_pos = 2048
 # removed unsupported: set dropper_pos = 34
 set system_hse_mhz = 8
 set task_statistics = ON
