@@ -525,8 +525,8 @@ void pgResetFn_osdElementConfig(osdElementConfig_t *osdElementConfig)
     osdElementConfig->item_pos[OSD_CAMERA_FRAME]       = OSD_POS((midCol - 12), (midRow - 6));
     osdElementConfig->item_pos[OSD_UP_DOWN_REFERENCE]  = OSD_POS((midCol - 2), (midRow - 1));
 
-    // SEC1_TAG default position (top-left, visible)
-    osdElementConfig->item_pos[OSD_SEC1_TAG]           = 2048;
+    // SEC1_TAG default position: visible on analog OSD without extra alignment helpers.
+    osdElementConfig->item_pos[OSD_SEC1_TAG]           = OSD_POS(2, 1);
     osdElementConfig->item_pos[OSD_DROPPER]            = OSD_POS(2, 1);
 }
 

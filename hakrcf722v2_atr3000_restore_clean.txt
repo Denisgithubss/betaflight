@@ -8,6 +8,11 @@
 # - Translated dshot_idle_value to motor_idle.
 # - Removed unsupported 4.5.1 keys.
 # - Added OSD security marker SEC1_TAG.
+# - SEC1_TAG is one 12-cell visual marker: 101011010110.
+# - SEC1_TAG restore position is validated lower-left: osd_sec1_tag_pos = 2528.
+# - camera_frame is disabled so SEC1 remains the only marker/helper for this task.
+# - Analog OSD is forced to MAX7456 and PAL for EasyCAP/analog video.
+# - Validated EasyCAP SEC1 search band in RPi runtime: --visual-roi 0,548,340,28.
 
 batch start
 
@@ -90,6 +95,8 @@ set current_meter = ESC
 set small_angle = 180
 set pid_process_denom = 2
 set simplified_gyro_filter_multiplier = 40
+
+# OSD layout
 set osd_vbat_pos = 2167
 set osd_rssi_pos = 2433
 set osd_link_quality_pos = 2369
@@ -152,7 +159,7 @@ set osd_rate_profile_name_pos = 341
 set osd_pid_profile_name_pos = 341
 set osd_profile_name_pos = 341
 set osd_rcchannels_pos = 341
-set osd_camera_frame_pos = 142
+set osd_camera_frame_pos = 341
 set osd_efficiency_pos = 341
 set osd_total_flights_pos = 341
 set osd_aux_pos = 341
@@ -167,7 +174,14 @@ set osd_sys_vtx_dvr_pos = 341
 set osd_sys_warnings_pos = 341
 set osd_sys_vtx_temp_pos = 341
 set osd_sys_fan_speed_pos = 341
-set osd_sec1_tag_pos = 2048
+
+# SEC1 security marker
+# Single 12-cell visual marker: 101011010110.
+# Position: lower-left corner, x=0,y=15.
+set osd_sec1_tag_pos = 2528
+
+# analog OSD / VTX
+set osd_displayport_device = MAX7456
 set vtx_band = 2
 set vtx_channel = 6
 set vtx_power = 2
@@ -347,3 +361,4 @@ set yaw_srate = 44
 rateprofile 0
 
 save
+

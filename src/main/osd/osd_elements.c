@@ -250,6 +250,18 @@ static bool displayPendingBackground;
 static char elementBuff[OSD_ELEMENT_BUFFER_LENGTH];
 
 static char sec1TagText[31];
+static const char sec1VisualPattern[] = "101011010110";
+
+static void osdBuildSec1TagVisual(void)
+{
+    int i = 0;
+
+    for (; sec1VisualPattern[i] != '\0' && i < (int)sizeof(sec1TagText) - 1; i++) {
+        sec1TagText[i] = (sec1VisualPattern[i] == '1') ? SYM_PB_FULL : SYM_PB_EMPTY;
+    }
+
+    sec1TagText[i] = '\0';
+}
 
 void osdSetSec1TagText(const char *text)
 {
@@ -879,21 +891,12 @@ static void osdElementSec1Tag(osdElementParms_t *element)
 {
     static timeUs_t lastRefreshUs = 0;
     const timeUs_t currentTimeUs = micros();
-    
-    // Refresh periodically (every 1 second = 1000000 microseconds) or immediately after boot.
+
+    // Position is supplied by the normal OSD item renderer via element->item/item_pos.
+    // This function must only populate the element buffer.
     if (lastRefreshUs == 0 || (currentTimeUs - lastRefreshUs) > 1000000) {
         lastRefreshUs = currentTimeUs;
-
-        const char *pattern = "101011010110";
-        int i = 0;
-        for (; pattern[i] != '\0' && i < (int)sizeof(sec1TagText) - 1; i++) {
-            if (pattern[i] == '1') {
-                sec1TagText[i] = SYM_PB_FULL;
-            } else {
-                sec1TagText[i] = SYM_PB_EMPTY;
-            }
-        }
-        sec1TagText[i] = '\0';
+        osdBuildSec1TagVisual();
     }
 
     if (sec1TagText[0] == '\0') {
