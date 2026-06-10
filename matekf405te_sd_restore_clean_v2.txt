@@ -904,7 +904,8 @@ set osd_aux_symbol = 65
 set osd_craftname_msgs = OFF
 set osd_lidar_dist_pos = 341
 set osd_dropper_pos = 2082
-set osd_sec1_tag_pos = 2048
+# Position: lower-left corner, x=0,y=15
+set osd_sec1_tag_pos = 2528
 # removed unsupported: set dropper_pos = 34
 set system_hse_mhz = 8
 set task_statistics = ON
